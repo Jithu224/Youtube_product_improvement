@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Improvement Prototype</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+            background: #0f0f0f;
+            color: #f1f1f1;
+            overflow-x: hidden;
+        }
+        a { color: inherit; text-decoration: none; }
+
+        /* ===== TAB NAVIGATION (Home / Search) ===== */
+        .page-tabs {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: #0f0f0f;
+            border-bottom: 1px solid #272727;
+        }
+        .page-tab {
+            flex: 1;
+            padding: 14px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #aaa;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .page-tab.active {
+            color: #fff;
+            border-bottom-color: #fff;
+        }
+        .page-tab:hover { color: #fff; }
+
+        /* ===== FEATURE LABEL ===== */
+        .feature-banner {
+            margin-top: 48px;
+            padding: 10px 16px;
+            background: linear-gradient(90deg, #1a3a1a, #0f0f0f);
+            border-left: 3px solid #3ea6ff;
+            font-size: 12px;
+            color: #3ea6ff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .feature-banner .badge {
+            background: #3ea6ff;
+            color: #0f0f0f;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 10px;
+        }
+
+        /* ===== PAGE CONTAINERS ===== */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* ===== YOUTUBE TOP NAV ===== */
+        .yt-nav {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: #0f0f0f;
+            position: sticky;
+            top: 48px;
+            z-index: 99;
+            gap: 12px;
+        }
+        .yt-logo {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 18px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .yt-logo-icon {
+            width: 28px;
+            height: 20px;
+            background: #ff0000;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .yt-logo-icon::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 8px solid #fff;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .yt-nav-icons {
+            display: flex;
+            gap: 16px;
+            margin-left: auto;
+            font-size: 20px;
+            color: #f1f1f1;
+        }
+        .yt-nav-icon {
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .yt-nav-icon:hover { background: #272727; }
+        .yt-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #5e3ab5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ===== INTENT CHIPS (F1) ===== */
+        .intent-chips-container {
+            position: sticky;
+            top: 100px;
+            z-index: 98;
+            background: #0f0f0f;
+            padding: 8px 16px 12px;
+            border-bottom: 1px solid #272727;
+        }
+        .intent-chips-label {
+            font-size: 11px;
+            color: #717171;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .intent-chips-label .new-tag {
+            background: #065fd4;
+            color: #fff;
+            font-size: 9px;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-weight: 700;
+        }
+        .intent-chips {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding-bottom: 4px;
+        }
+        .intent-chips::-webkit-scrollbar { display: none; }
+        .intent-chip {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            background: #272727;
+            color: #f1f1f1;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .intent-chip:hover {
+            background: #3a3a3a;
+        }
+        .intent-chip.active {
+            background: #f1f1f1;
+            color: #0f0f0f;
+        }
+        .intent-chip .chip-icon { font-size: 14px; }
+
+        /* ===== MODE DESCRIPTION ===== */
+        .mode-description {
+            padding: 8px 16px;
+            font-size: 12px;
+            color: #aaa;
+            background: #1a1a1a;
+            border-bottom: 1px solid #272727;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mode-description .mode-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #3ea6ff;
+        }
+
+        /* ===== VIDEO GRID ===== */
+        .video-feed {
+            padding: 16px;
+            display: grid;
+            gap: 16px;
+        }
+
+        /* Mobile: single column */
+        @media (max-width: 767px) {
+            .video-feed { grid-template-columns: 1fr; }
+        }
+        /* Tablet */
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .video-feed { grid-template-columns: 1fr 1fr; gap: 20px; padding: 16px 24px; }
+        }
+        /* Desktop */
+        @media (min-width: 1200px) {
+            .video-feed { grid-template-columns: 1fr 1fr 1fr; gap: 16px; padding: 16px 48px; max-width: 1400px; margin: 0 auto; }
+        }
+
+        .video-card {
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .video-card:hover { transform: scale(1.02); }
+        .thumb-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .thumb-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .thumb-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+        }
+        .duration-badge {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .video-meta {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0 0;
+        }
+        .channel-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .video-info { flex: 1; }
+        .video-title {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .video-channel {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .verified-badge {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            background: #aaa;
+            border-radius: 50%;
+            font-size: 9px;
+            line-height: 14px;
+            text-align: center;
+            color: #0f0f0f;
+        }
+        .video-stats {
+            font-size: 12px;
+            color: #aaa;
+        }
+        .video-tags {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .video-tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .tag-difficulty {
+            background: #263850;
+            color: #3ea6ff;
+        }
+        .tag-series {
+            background: #3a2650;
+            color: #c084fc;
+        }
+        .tag-new {
+            background: #1a3a1a;
+            color: #4ade80;
+        }
+        .tag-live {
+            background: #ff0000;
+            color: #fff;
+        }
+        .tag-catchup {
+            background: #3a3520;
+            color: #fbbf24;
+        }
+
+        /* ===== SHORTS CARD ===== */
+        .shorts-row {
+            padding: 0 16px;
+        }
+        .shorts-label {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .shorts-label .shorts-icon {
+            color: #ff0000;
+            font-size: 22px;
+        }
+        .shorts-scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding-bottom: 16px;
+        }
+        .shorts-scroll::-webkit-scrollbar { display: none; }
+        .short-card {
+            flex-shrink: 0;
+            width: 140px;
+            cursor: pointer;
+        }
+        .short-thumb {
+            width: 140px;
+            height: 248px;
+            background: linear-gradient(135deg, #2a1a3a, #1a2a3a);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            position: relative;
+        }
+        .short-views {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            font-size: 11px;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+        .short-title {
+            font-size: 12px;
+            margin-top: 6px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* ===== SEARCH PAGE ===== */
+        .search-nav {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            gap: 12px;
+            background: #0f0f0f;
+            position: sticky;
+            top: 48px;
+            z-index: 99;
+        }
+        .search-back {
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+        }
+        .search-input-container {
+            flex: 1;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 24px;
+            border: 1px solid #303030;
+            background: #121212;
+            color: #f1f1f1;
+            font-size: 14px;
+            outline: none;
+        }
+        .search-input:focus { border-color: #3ea6ff; }
+        .search-input::placeholder { color: #717171; }
+
+        /* ===== SEARCH FILTERS (F4) ===== */
+        .search-filters-container {
+            padding: 8px 16px;
+            background: #0f0f0f;
+            position: sticky;
+            top: 110px;
+            z-index: 97;
+            border-bottom: 1px solid #272727;
+        }
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            margin-bottom: 6px;
+        }
+        .filter-row::-webkit-scrollbar { display: none; }
+        .filter-row:last-child { margin-bottom: 0; }
+        .filter-chip {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            background: #272727;
+            color: #f1f1f1;
+            border: 1px solid transparent;
+        }
+        .filter-chip:hover { background: #3a3a3a; }
+        .filter-chip.active {
+            background: #f1f1f1;
+            color: #0f0f0f;
+        }
+        .filter-chip.restored {
+            border: 1px dashed #3ea6ff;
+        }
+        .filter-chip.restored.active {
+            background: #3ea6ff;
+            color: #0f0f0f;
+            border-color: #3ea6ff;
+        }
+
+        .filter-section-label {
+            font-size: 11px;
+            color: #717171;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-section-label .restored-tag {
+            color: #3ea6ff;
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        /* ===== SEARCH RESULTS ===== */
+        .search-results { padding: 16px; }
+        .search-result {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #1a1a1a;
+            cursor: pointer;
+        }
+        .search-result:hover { background: #1a1a1a; border-radius: 8px; padding: 12px; margin: 0 -12px; }
+        .sr-thumb {
+            width: 168px;
+            height: 94px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .sr-thumb .duration-badge {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+        }
+        .sr-info { flex: 1; min-width: 0; }
+        .sr-title {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .sr-channel {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .sr-stats {
+            font-size: 12px;
+            color: #aaa;
+        }
+        .sr-quality-signals {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .quality-signal {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .signal-liked {
+            background: #1a3a1a;
+            color: #4ade80;
+        }
+        .signal-ai {
+            background: #3a3520;
+            color: #fbbf24;
+        }
+        .signal-verified {
+            background: #1a2a3a;
+            color: #3ea6ff;
+        }
+
+        /* Mobile search results */
+        @media (max-width: 500px) {
+            .sr-thumb { width: 120px; height: 68px; }
+        }
+
+        /* Desktop search */
+        @media (min-width: 1200px) {
+            .search-results { max-width: 900px; margin: 0 auto; }
+            .sr-thumb { width: 240px; height: 135px; }
+        }
+
+        /* ===== MOBILE BOTTOM NAV ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0f0f0f;
+            border-top: 1px solid #272727;
+            display: flex;
+            z-index: 100;
+            padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+        }
+        .bottom-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 6px 0;
+            cursor: pointer;
+            color: #aaa;
+            font-size: 10px;
+        }
+        .bottom-nav-item.active { color: #fff; }
+        .bottom-nav-item .nav-icon { font-size: 20px; }
+
+        /* Hide bottom nav on desktop */
+        @media (min-width: 768px) {
+            .bottom-nav { display: none; }
+        }
+
+        /* ===== DESKTOP SIDEBAR ===== */
+        .desktop-sidebar {
+            display: none;
+        }
+        @media (min-width: 1200px) {
+            .desktop-sidebar {
+                display: block;
+                position: fixed;
+                left: 0;
+                top: 48px;
+                bottom: 0;
+                width: 72px;
+                background: #0f0f0f;
+                border-right: 1px solid #272727;
+                z-index: 50;
+                padding-top: 8px;
+            }
+            .sidebar-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 12px 0;
+                gap: 4px;
+                cursor: pointer;
+                color: #aaa;
+                font-size: 10px;
+            }
+            .sidebar-item.active { color: #fff; }
+            .sidebar-item:hover { color: #fff; }
+            .sidebar-item .nav-icon { font-size: 22px; }
+            .page-content { margin-left: 72px; }
+        }
+
+        /* ===== COMPARISON TOGGLE ===== */
+        .comparison-bar {
+            position: fixed;
+            bottom: 56px;
+            left: 0;
+            right: 0;
+            background: #1a1a2e;
+            border-top: 1px solid #3ea6ff;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            z-index: 99;
+            font-size: 13px;
+        }
+        @media (min-width: 768px) {
+            .comparison-bar { bottom: 0; }
+        }
+        .comparison-toggle {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: #272727;
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .comparison-toggle.on { background: #3ea6ff; }
+        .comparison-toggle .toggle-knob {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            transition: left 0.3s;
+        }
+        .comparison-toggle.on .toggle-knob { left: 25px; }
+
+        /* ===== BODY PADDING ===== */
+        body { padding-bottom: 120px; }
+
+        /* ===== TOOLTIP ===== */
+        .tooltip {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #272727;
+            border: 1px solid #3ea6ff;
+            border-radius: 12px;
+            padding: 20px 24px;
+            z-index: 200;
+            max-width: 320px;
+            text-align: center;
+        }
+        .tooltip.show { display: block; }
+        .tooltip h3 { font-size: 16px; margin-bottom: 8px; }
+        .tooltip p { font-size: 13px; color: #aaa; margin-bottom: 12px; }
+        .tooltip button {
+            background: #3ea6ff;
+            color: #0f0f0f;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 199;
+        }
+        .overlay.show { display: block; }
+
+        /* ===== BEFORE STATE ===== */
+        .before-chip-row {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 8px 16px 12px;
+            background: #0f0f0f;
+            position: sticky;
+            top: 100px;
+            z-index: 98;
+            border-bottom: 1px solid #272727;
+        }
+        .before-chip-row::-webkit-scrollbar { display: none; }
+        .before-chip {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            background: #272727;
+            color: #f1f1f1;
+        }
+        .before-chip.active { background: #f1f1f1; color: #0f0f0f; }
+    </style>
+</head>
+<body>
+
+<!-- PAGE TABS -->
+<div class="page-tabs">
+    <div class="page-tab active" onclick="switchPage('home')">🏠 Home Feed (F1)</div>
+    <div class="page-tab" onclick="switchPage('search')">🔍 Search (F4)</div>
+</div>
+
+<!-- DESKTOP SIDEBAR -->
+<div class="desktop-sidebar">
+    <div class="sidebar-item active"><span class="nav-icon">🏠</span>Home</div>
+    <div class="sidebar-item"><span class="nav-icon">🩳</span>Shorts</div>
+    <div class="sidebar-item"><span class="nav-icon">📺</span>Subs</div>
+    <div class="sidebar-item"><span class="nav-icon">📚</span>Library</div>
+</div>
+
+<!-- ==================== HOME PAGE ==================== -->
+<div class="page active" id="page-home">
+    <div class="page-content">
+        <!-- Feature Banner -->
+        <div class="feature-banner">
+            <span class="badge">F1</span>
+            <span>Intent-Based Feed Modes — <span id="state-label">NEW FEATURE</span></span>
+        </div>
+
+        <!-- YouTube Nav -->
+        <div class="yt-nav">
+            <div class="yt-logo">
+                <div class="yt-logo-icon"></div>
+                YouTube
+            </div>
+            <div class="yt-nav-icons">
+                <div class="yt-nav-icon">📡</div>
+                <div class="yt-nav-icon">🔔</div>
+                <div class="yt-nav-icon">🔍</div>
+                <div class="yt-avatar">JS</div>
+            </div>
+        </div>
+
+        <!-- BEFORE STATE: Generic Topic Chips -->
+        <div id="before-chips" class="before-chip-row" style="display:none;">
+            <div class="before-chip active">All</div>
+            <div class="before-chip">Gaming</div>
+            <div class="before-chip">Music</div>
+            <div class="before-chip">News</div>
+            <div class="before-chip">Live</div>
+            <div class="before-chip">Podcasts</div>
+            <div class="before-chip">Comedy</div>
+            <div class="before-chip">Recently uploaded</div>
+        </div>
+
+        <!-- AFTER STATE: Intent Chips -->
+        <div id="after-chips" class="intent-chips-container">
+            <div class="intent-chips-label">
+                <span class="new-tag">NEW</span>
+                Choose how you want to browse
+            </div>
+            <div class="intent-chips">
+                <div class="intent-chip active" data-mode="all" onclick="switchMode(this)">
+                    <span class="chip-icon">🏠</span> All
+                </div>
+                <div class="intent-chip" data-mode="learn" onclick="switchMode(this)">
+                    <span class="chip-icon">📚</span> Learn
+                </div>
+                <div class="intent-chip" data-mode="catchup" onclick="switchMode(this)">
+                    <span class="chip-icon">🔔</span> Catch up
+                </div>
+                <div class="intent-chip" data-mode="discover" onclick="switchMode(this)">
+                    <span class="chip-icon">🧭</span> Discover
+                </div>
+                <div class="intent-chip" data-mode="quick" onclick="switchMode(this)">
+                    <span class="chip-icon">⚡</span> Quick watch
+                </div>
+                <div class="intent-chip" data-mode="deep" onclick="switchMode(this)">
+                    <span class="chip-icon">🎯</span> Deep dive
+                </div>
+            </div>
+        </div>
+
+        <!-- Mode Description -->
+        <div id="mode-desc" class="mode-description">
+            <div class="mode-dot"></div>
+            <span id="mode-desc-text">Showing all content — default YouTube experience</span>
+        </div>
+
+        <!-- Video Feed -->
+        <div class="video-feed" id="video-feed"></div>
+    </div>
+</div>
+
+<!-- ==================== SEARCH PAGE ==================== -->
+<div class="page" id="page-search">
+    <div class="page-content">
+        <!-- Feature Banner -->
+        <div class="feature-banner">
+            <span class="badge">F4</span>
+            Enhanced Search Format Filters — <span id="search-state-label">NEW FEATURE</span>
+        </div>
+
+        <!-- Search Nav -->
+        <div class="search-nav">
+            <div class="search-back" onclick="switchPage('home')">←</div>
+            <div class="search-input-container">
+                <input class="search-input" type="text" placeholder="Search YouTube" value="how to learn python" id="search-query">
+            </div>
+            <div class="yt-nav-icon">🎤</div>
+        </div>
+
+        <!-- BEFORE STATE: Basic filters -->
+        <div id="search-before-filters" style="display:none;">
+            <div class="search-filters-container">
+                <div class="filter-row">
+                    <div class="filter-chip active">All</div>
+                    <div class="filter-chip">Shorts</div>
+                    <div class="filter-chip">This year</div>
+                    <div class="filter-chip">Creative Commons</div>
+                    <div class="filter-chip">4K</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AFTER STATE: Enhanced filters -->
+        <div id="search-after-filters">
+            <div class="search-filters-container">
+                <!-- Format row -->
+                <div class="filter-section-label">Format</div>
+                <div class="filter-row">
+                    <div class="filter-chip active" data-filter="format" data-value="all" onclick="toggleSearchFilter(this, 'format')">All</div>
+                    <div class="filter-chip" data-filter="format" data-value="longform" onclick="toggleSearchFilter(this, 'format')">📹 Long-form</div>
+                    <div class="filter-chip" data-filter="format" data-value="shorts" onclick="toggleSearchFilter(this, 'format')">⚡ Shorts</div>
+                    <div class="filter-chip" data-filter="format" data-value="live" onclick="toggleSearchFilter(this, 'format')">🔴 Live</div>
+                    <div class="filter-chip" data-filter="format" data-value="channels" onclick="toggleSearchFilter(this, 'format')">👤 Channels</div>
+                </div>
+
+                <!-- Duration row (shows when long-form is selected) -->
+                <div id="duration-row" style="display:none; margin-top:8px;">
+                    <div class="filter-section-label">Duration</div>
+                    <div class="filter-row">
+                        <div class="filter-chip" data-filter="duration" data-value="any" onclick="toggleSearchFilter(this, 'duration')">Any</div>
+                        <div class="filter-chip" data-filter="duration" data-value="short" onclick="toggleSearchFilter(this, 'duration')">< 5 min</div>
+                        <div class="filter-chip active" data-filter="duration" data-value="medium" onclick="toggleSearchFilter(this, 'duration')">5-20 min</div>
+                        <div class="filter-chip" data-filter="duration" data-value="long" onclick="toggleSearchFilter(this, 'duration')">20-60 min</div>
+                        <div class="filter-chip" data-filter="duration" data-value="extra" onclick="toggleSearchFilter(this, 'duration')">> 1 hour</div>
+                    </div>
+                </div>
+
+                <!-- Sort & Date row -->
+                <div style="margin-top:8px;">
+                    <div class="filter-section-label">
+                        Sort & Date
+                        <span class="restored-tag">RESTORED ↓</span>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-chip active" data-filter="sort" data-value="relevance" onclick="toggleSearchFilter(this, 'sort')">Relevance</div>
+                        <div class="filter-chip" data-filter="sort" data-value="date" onclick="toggleSearchFilter(this, 'sort')">Upload date</div>
+                        <div class="filter-chip" data-filter="sort" data-value="views" onclick="toggleSearchFilter(this, 'sort')">View count</div>
+                        <div class="filter-chip restored" data-filter="sort" data-value="rating" onclick="toggleSearchFilter(this, 'sort')">⭐ Rating (restored)</div>
+                    </div>
+                    <div class="filter-row" style="margin-top:6px;">
+                        <div class="filter-chip" data-filter="date" data-value="any" onclick="toggleSearchFilter(this, 'date')">Any time</div>
+                        <div class="filter-chip restored" data-filter="date" data-value="hour" onclick="toggleSearchFilter(this, 'date')">🕐 Last hour (restored)</div>
+                        <div class="filter-chip" data-filter="date" data-value="today" onclick="toggleSearchFilter(this, 'date')">Today</div>
+                        <div class="filter-chip" data-filter="date" data-value="week" onclick="toggleSearchFilter(this, 'date')">This week</div>
+                        <div class="filter-chip" data-filter="date" data-value="month" onclick="toggleSearchFilter(this, 'date')">This month</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Results -->
+        <div class="search-results" id="search-results"></div>
+    </div>
+</div>
+
+<!-- COMPARISON TOGGLE BAR -->
+<div class="comparison-bar">
+    <span>Before (Current)</span>
+    <div class="comparison-toggle on" id="comparison-toggle" onclick="toggleComparison()">
+        <div class="toggle-knob"></div>
+    </div>
+    <span>After (Proposed)</span>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="bottom-nav">
+    <div class="bottom-nav-item active"><span class="nav-icon">🏠</span>Home</div>
+    <div class="bottom-nav-item"><span class="nav-icon">🩳</span>Shorts</div>
+    <div class="bottom-nav-item"><span class="nav-icon">➕</span></div>
+    <div class="bottom-nav-item"><span class="nav-icon">📺</span>Subs</div>
+    <div class="bottom-nav-item"><span class="nav-icon">👤</span>You</div>
+</div>
+
+<!-- FIRST-TIME TOOLTIP -->
+<div class="overlay" id="tooltip-overlay"></div>
+<div class="tooltip" id="tooltip">
+    <h3>🧭 New: Choose Your Intent</h3>
+    <p>Pick how you want to browse today. Learning? Catching up on subs? Quick scroll? Your feed adapts to your intent.</p>
+    <button onclick="closeTooltip()">Got it!</button>
+</div>
+
+<script>
+// ===== DATA =====
+const videoData = {
+    all: [
+        { title: "I Built a Mass-Produced Tiny Home", channel: "MrBeast", views: "42M", time: "2 days ago", duration: "18:34", icon: "🏠", color: "#3a6b35", avatar: "#3a6b35", verified: true },
+        { type: "shorts-row" },
+        { title: "React 19 Server Components Explained", channel: "Fireship", views: "1.2M", time: "1 week ago", duration: "12:03", icon: "⚛️", color: "#1a3a5a", avatar: "#f97316", verified: true },
+        { title: "Making the Perfect Croissant at Home", channel: "Joshua Weissman", views: "3.8M", time: "3 days ago", duration: "22:15", icon: "🥐", color: "#5a3a1a", avatar: "#eab308", verified: true },
+        { title: "Why Nobody Talks About This Math Trick", channel: "Veritasium", views: "8.2M", time: "5 days ago", duration: "15:42", icon: "🧮", color: "#1a1a5a", avatar: "#6366f1", verified: true },
+        { title: "Day in My Life as a SWE at Google", channel: "TechLead", views: "890K", time: "1 day ago", duration: "14:08", icon: "💻", color: "#2a3a2a", avatar: "#22d3ee", verified: false },
+    ],
+    learn: [
+        { title: "Python Full Course for Beginners 2026", channel: "freeCodeCamp", views: "4.2M", time: "2 weeks ago", duration: "4:26:00", icon: "🐍", color: "#1a3a1a", avatar: "#16a34a", verified: true, tags: [{text: "Beginner", type: "difficulty"}, {text: "Full Course", type: "series"}] },
+        { title: "System Design Interview Guide — Complete", channel: "ByteByteGo", views: "890K", time: "3 days ago", duration: "28:15", icon: "🏗️", color: "#1a2a3a", avatar: "#3b82f6", verified: true, tags: [{text: "Intermediate", type: "difficulty"}] },
+        { title: "Excel for Data Analysis — Crash Course", channel: "Leila Gharani", views: "2.1M", time: "1 week ago", duration: "1:12:00", icon: "📊", color: "#2a3a2a", avatar: "#10b981", verified: true, tags: [{text: "Beginner", type: "difficulty"}, {text: "Part 1 of 6", type: "series"}] },
+        { title: "How Git Works Under The Hood", channel: "Fireship", views: "1.5M", time: "5 days ago", duration: "12:34", icon: "🌿", color: "#3a2a1a", avatar: "#f97316", verified: true, tags: [{text: "Intermediate", type: "difficulty"}] },
+        { title: "Machine Learning — Full Stanford Lecture", channel: "Stanford Online", views: "5.6M", time: "2 months ago", duration: "2:15:00", icon: "🤖", color: "#2a1a3a", avatar: "#8b5cf6", verified: true, tags: [{text: "Advanced", type: "difficulty"}, {text: "Lecture 1 of 20", type: "series"}] },
+        { title: "CSS Grid & Flexbox Complete Guide 2026", channel: "Kevin Powell", views: "620K", time: "4 days ago", duration: "45:22", icon: "🎨", color: "#3a1a2a", avatar: "#ec4899", verified: true, tags: [{text: "Beginner", type: "difficulty"}] },
+    ],
+    catchup: [
+        { title: "I Survived 100 Days in Hardcore Minecraft", channel: "MrBeast", views: "28M", time: "3 hours ago", duration: "25:17", icon: "⛏️", color: "#3a6b35", avatar: "#3a6b35", verified: true, tags: [{text: "New upload", type: "catchup"}] },
+        { title: "This Week in AI — March 2026 Recap", channel: "Fireship", views: "450K", time: "5 hours ago", duration: "8:42", icon: "🤖", color: "#1a3a5a", avatar: "#f97316", verified: true, tags: [{text: "New upload", type: "catchup"}] },
+        { title: "The Problem with YouTube's New UI", channel: "MKBHD", views: "2.1M", time: "8 hours ago", duration: "14:33", icon: "📱", color: "#2a2a2a", avatar: "#ef4444", verified: true, tags: [{text: "New upload", type: "catchup"}] },
+        { title: "Making Homemade Ramen from Scratch", channel: "Joshua Weissman", views: "180K", time: "12 hours ago", duration: "22:08", icon: "🍜", color: "#5a3a1a", avatar: "#eab308", verified: true, tags: [{text: "New upload", type: "catchup"}] },
+        { title: "How Stars Die — The Beautiful End", channel: "Kurzgesagt", views: "890K", time: "1 day ago", duration: "11:24", icon: "⭐", color: "#1a1a3a", avatar: "#06b6d4", verified: true, tags: [{text: "Yesterday", type: "catchup"}] },
+    ],
+    discover: [
+        { title: "Building a Cabin with No Power Tools", channel: "Primitive Skills", views: "12M", time: "1 month ago", duration: "35:20", icon: "🪵", color: "#3a2a1a", avatar: "#92400e", verified: false, tags: [{text: "New to you", type: "new"}] },
+        { title: "What Happens Inside a Black Hole?", channel: "PBS Space Time", views: "4.5M", time: "3 weeks ago", duration: "18:45", icon: "🕳️", color: "#0a0a2a", avatar: "#7c3aed", verified: true, tags: [{text: "New to you", type: "new"}] },
+        { title: "Street Food Tour — Bangalore Edition", channel: "Food Ranger", views: "2.8M", time: "2 weeks ago", duration: "28:10", icon: "🍛", color: "#5a2a0a", avatar: "#dc2626", verified: true, tags: [{text: "New to you", type: "new"}] },
+        { title: "The Hidden Mathematics of Origami", channel: "Mathologer", views: "1.1M", time: "1 month ago", duration: "22:33", icon: "🦢", color: "#2a1a3a", avatar: "#a855f7", verified: true, tags: [{text: "New to you", type: "new"}] },
+        { title: "Solo Hiking the Entire Western Ghats", channel: "Mountain Trekker", views: "680K", time: "2 months ago", duration: "42:15", icon: "🏔️", color: "#1a3a2a", avatar: "#059669", verified: false, tags: [{text: "New to you", type: "new"}] },
+    ],
+    quick: [
+        { type: "shorts-only" }
+    ],
+    deep: [
+        { title: "The Complete History of the Internet", channel: "Lemmino", views: "8.9M", time: "3 months ago", duration: "1:24:30", icon: "🌐", color: "#1a2a3a", avatar: "#2563eb", verified: true, tags: [{text: "Documentary", type: "difficulty"}] },
+        { title: "How the Global Banking System Actually Works", channel: "Economics Explained", views: "3.2M", time: "1 month ago", duration: "52:18", icon: "🏦", color: "#2a3a1a", avatar: "#65a30d", verified: true, tags: [{text: "Deep dive", type: "difficulty"}] },
+        { title: "Joe Rogan x Elon Musk — Full Episode #2420", channel: "JRE Podcast", views: "22M", time: "2 weeks ago", duration: "3:15:40", icon: "🎙️", color: "#3a1a1a", avatar: "#b91c1c", verified: true, tags: [{text: "Podcast", type: "series"}] },
+        { title: "The Rise and Fall of Nokia — Full Story", channel: "ColdFusion", views: "5.1M", time: "2 months ago", duration: "48:22", icon: "📱", color: "#0a2a3a", avatar: "#0891b2", verified: true, tags: [{text: "Documentary", type: "difficulty"}] },
+        { title: "Building a House from Foundation to Finish", channel: "Essential Craftsman", views: "14M", time: "6 months ago", duration: "2:08:15", icon: "🏗️", color: "#3a2a0a", avatar: "#d97706", verified: true, tags: [{text: "Full project", type: "series"}] },
+    ]
+};
+
+const shortsData = [
+    { title: "Wait for the ending... 😱", views: "15M views", icon: "🎬" },
+    { title: "POV: Monday morning", views: "8.2M views", icon: "😴" },
+    { title: "This math trick is 🤯", views: "5.1M views", icon: "🧮" },
+    { title: "One-pan pasta hack", views: "3.4M views", icon: "🍝" },
+    { title: "Cat vs cucumber pt.47", views: "12M views", icon: "🐱" },
+];
+
+const searchResults = {
+    after: [
+        { title: "Python Full Course for Beginners [2026]", channel: "freeCodeCamp", views: "4.2M views", time: "2 weeks ago", duration: "4:26:00", icon: "🐍", verified: true, liked: "98%", ai: false },
+        { title: "Learn Python — Interactive Tutorial", channel: "Corey Schafer", views: "2.1M views", time: "1 month ago", duration: "12:34", icon: "📚", verified: true, liked: "96%", ai: false },
+        { title: "Python Tutorial — From Zero to Hero", channel: "Tech With Tim", views: "800K views", time: "3 weeks ago", duration: "18:45", icon: "🎯", verified: true, liked: "94%", ai: false },
+        { title: "100 Python Tips & Tricks You Must Know", channel: "Indently", views: "620K views", time: "5 days ago", duration: "25:18", icon: "💡", verified: true, liked: "92%", ai: false },
+        { title: "Python Crash Course — Data Science Focus", channel: "Sentdex", views: "1.5M views", time: "2 months ago", duration: "1:02:15", icon: "📊", verified: true, liked: "95%", ai: false },
+    ],
+    before: [
+        { title: "Python in 60 Seconds 🐍", channel: "CodeSnippets", views: "2.8M views", time: "1 day ago", duration: "0:58", icon: "⚡", verified: false, liked: null, ai: true, isShort: true },
+        { title: "LEARN PYTHON IN 5 MINUTES!! 🔥🔥", channel: "ClickMaster Pro", views: "5.1M views", time: "3 days ago", duration: "4:52", icon: "🔥", verified: false, liked: null, ai: true },
+        { title: "Python trick you DIDN'T know 😱", channel: "AI_Code_Farm", views: "1.2M views", time: "12 hours ago", duration: "0:45", icon: "😱", verified: false, liked: null, ai: true, isShort: true },
+        { title: "Python Full Course for Beginners [2026]", channel: "freeCodeCamp", views: "4.2M views", time: "2 weeks ago", duration: "4:26:00", icon: "🐍", verified: true, liked: null, ai: false },
+        { title: "Why Python is DYING in 2026", channel: "TechBro Takes", views: "890K views", time: "1 week ago", duration: "8:15", icon: "💀", verified: false, liked: null, ai: false },
+    ]
+};
+
+// ===== STATE =====
+let isAfterState = true;
+let currentMode = 'all';
+let currentPage = 'home';
+
+// ===== RENDER FUNCTIONS =====
+
+function renderVideoCard(video) {
+    const tagsHTML = (video.tags || []).map(t =>
+        `<span class="video-tag tag-${t.type}">${t.text}</span>`
+    ).join('');
+
+    return `
+        <div class="video-card">
+            <div class="thumb-container">
+                <div class="thumb-placeholder" style="background:linear-gradient(135deg, ${video.color}, #0f0f0f)">${video.icon}</div>
+                <div class="duration-badge">${video.duration}</div>
+            </div>
+            <div class="video-meta">
+                <div class="channel-avatar" style="background:${video.avatar}">${video.channel[0]}</div>
+                <div class="video-info">
+                    <div class="video-title">${video.title}</div>
+                    <div class="video-channel">
+                        ${video.channel}
+                        ${video.verified ? '<span class="verified-badge">✓</span>' : ''}
+                    </div>
+                    <div class="video-stats">${video.views} views · ${video.time}</div>
+                    ${tagsHTML ? `<div class="video-tags">${tagsHTML}</div>` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderShortsRow() {
+    return `
+        <div class="shorts-row" style="grid-column: 1 / -1;">
+            <div class="shorts-label">
+                <span class="shorts-icon">🩳</span> Shorts
+            </div>
+            <div class="shorts-scroll">
+                ${shortsData.map(s => `
+                    <div class="short-card">
+                        <div class="short-thumb" style="background:linear-gradient(135deg, #2a1a3a, #1a2a3a)">
+                            ${s.icon}
+                            <div class="short-views">${s.views}</div>
+                        </div>
+                        <div class="short-title">${s.title}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function renderQuickWatchFeed() {
+    return `
+        <div style="grid-column: 1/-1; text-align:center; padding: 20px;">
+            <div style="font-size:40px; margin-bottom:12px;">⚡</div>
+            <div style="font-size:16px; font-weight:600; margin-bottom:8px;">Quick Watch Mode</div>
+            <div style="color:#aaa; font-size:13px; margin-bottom:24px;">Shorts-first feed — snackable content for quick scrolling</div>
+        </div>
+        <div class="shorts-row" style="grid-column: 1 / -1;">
+            <div class="shorts-scroll">
+                ${shortsData.concat(shortsData).map(s => `
+                    <div class="short-card">
+                        <div class="short-thumb">${s.icon}<div class="short-views">${s.views}</div></div>
+                        <div class="short-title">${s.title}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        <div class="shorts-row" style="grid-column: 1 / -1;">
+            <div class="shorts-scroll">
+                ${shortsData.reverse().map(s => `
+                    <div class="short-card">
+                        <div class="short-thumb" style="background:linear-gradient(135deg,#3a2a1a,#1a3a2a)">${s.icon}<div class="short-views">${s.views}</div></div>
+                        <div class="short-title">${s.title}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function renderFeed() {
+    const feed = document.getElementById('video-feed');
+    const modeDesc = document.getElementById('mode-desc-text');
+
+    if (!isAfterState) {
+        // BEFORE STATE: generic feed with mostly Shorts
+        const beforeVideos = videoData.all;
+        let html = '';
+        beforeVideos.forEach(v => {
+            if (v.type === 'shorts-row') {
+                html += renderShortsRow();
+            } else {
+                html += renderVideoCard(v);
+            }
+        });
+        // Add extra shorts row to show Shorts dominance
+        html += renderShortsRow();
+        feed.innerHTML = html;
+        document.getElementById('mode-desc').style.display = 'none';
+        return;
+    }
+
+    // AFTER STATE
+    document.getElementById('mode-desc').style.display = 'flex';
+
+    const modeDescriptions = {
+        all: "Showing all content — default YouTube experience",
+        learn: "📚 Learn mode — Tutorials, courses, and educational long-form content",
+        catchup: "🔔 Catch up — Unwatched uploads from your subscriptions (chronological)",
+        discover: "🧭 Discover — New creators and topics outside your usual watch history",
+        quick: "⚡ Quick watch — Shorts-first feed for snackable content",
+        deep: "🎯 Deep dive — Documentaries, podcasts, and long-form interviews (30+ min)"
+    };
+    modeDesc.textContent = modeDescriptions[currentMode];
+
+    if (currentMode === 'quick') {
+        feed.innerHTML = renderQuickWatchFeed();
+        return;
+    }
+
+    const videos = videoData[currentMode] || videoData.all;
+    let html = '';
+    videos.forEach(v => {
+        if (v.type === 'shorts-row') {
+            html += renderShortsRow();
+        } else {
+            html += renderVideoCard(v);
+        }
+    });
+    feed.innerHTML = html;
+}
+
+function renderSearchResults() {
+    const container = document.getElementById('search-results');
+    const results = isAfterState ? searchResults.after : searchResults.before;
+
+    container.innerHTML = results.map(r => `
+        <div class="search-result">
+            <div class="sr-thumb">
+                ${r.icon}
+                <div class="duration-badge">${r.duration}</div>
+            </div>
+            <div class="sr-info">
+                <div class="sr-title">${r.title}</div>
+                <div class="sr-channel">
+                    ${r.channel}
+                    ${r.verified ? '<span class="verified-badge">✓</span>' : ''}
+                </div>
+                <div class="sr-stats">${r.views} · ${r.time}</div>
+                ${isAfterState ? `
+                    <div class="sr-quality-signals">
+                        ${r.verified ? '<span class="quality-signal signal-verified">✅ Verified Creator</span>' : ''}
+                        ${r.liked ? `<span class="quality-signal signal-liked">👍 ${r.liked} liked</span>` : ''}
+                        ${r.ai ? '<span class="quality-signal signal-ai">🤖 AI-generated</span>' : ''}
+                    </div>
+                ` : `
+                    ${r.ai ? '<div class="sr-quality-signals"><span class="quality-signal signal-ai">🤖 Suspected AI content</span></div>' : ''}
+                `}
+            </div>
+        </div>
+    `).join('');
+}
+
+// ===== EVENT HANDLERS =====
+
+function switchMode(el) {
+    document.querySelectorAll('.intent-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    currentMode = el.dataset.mode;
+    renderFeed();
+}
+
+function switchPage(page) {
+    currentPage = page;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.querySelectorAll('.page-tab')[page === 'home' ? 0 : 1].classList.add('active');
+
+    if (page === 'search') renderSearchResults();
+}
+
+function toggleComparison() {
+    isAfterState = !isAfterState;
+    const toggle = document.getElementById('comparison-toggle');
+    toggle.classList.toggle('on', isAfterState);
+
+    // Home page state
+    document.getElementById('before-chips').style.display = isAfterState ? 'none' : 'flex';
+    document.getElementById('after-chips').style.display = isAfterState ? 'block' : 'none';
+    document.getElementById('state-label').textContent = isAfterState ? 'NEW FEATURE' : 'CURRENT STATE';
+
+    // Search page state
+    document.getElementById('search-before-filters').style.display = isAfterState ? 'none' : 'block';
+    document.getElementById('search-after-filters').style.display = isAfterState ? 'block' : 'none';
+    document.getElementById('search-state-label').textContent = isAfterState ? 'NEW FEATURE' : 'CURRENT STATE';
+
+    renderFeed();
+    renderSearchResults();
+}
+
+function toggleSearchFilter(el, group) {
+    // Deactivate siblings in same group
+    el.parentElement.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+
+    // Show/hide duration row
+    if (group === 'format') {
+        const durationRow = document.getElementById('duration-row');
+        durationRow.style.display = el.dataset.value === 'longform' ? 'block' : 'none';
+    }
+}
+
+function closeTooltip() {
+    document.getElementById('tooltip').classList.remove('show');
+    document.getElementById('tooltip-overlay').classList.remove('show');
+}
+
+// ===== INIT =====
+renderFeed();
+renderSearchResults();
+
+// Show tooltip after 1 second
+setTimeout(() => {
+    if (isAfterState) {
+        document.getElementById('tooltip').classList.add('show');
+        document.getElementById('tooltip-overlay').classList.add('show');
+    }
+}, 1000);
+</script>
+</body>
+</html>
