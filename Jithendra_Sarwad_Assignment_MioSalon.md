@@ -14,21 +14,11 @@ YouTube's CEO Neal Mohan stated the 2026 priority is **"Reinventing entertainmen
 
 ---
 
-### 2. Problem Statement (JTBD Framework)
+### 2. Problem Statement (JTBD)
 
-**Job 1 — The Learner**:
-*When* I open YouTube to learn a new skill, *I want to* find quality long-form tutorials quickly, *so I can* build real knowledge without wading through Shorts and clickbait.
-**Broken because**: Home feed serves 80% Shorts. Long-form educational content is buried.
+> **When** intent-driven YouTube users — learners, subscribers, and researchers — open the app to accomplish a specific goal (learn a skill, catch up on creators, or find a trusted answer), **they struggle to** get the job done because the home feed is 80% Shorts regardless of their intent, and search has lost critical filters (Rating, Last Hour) while being flooded with AI slop — **which forces them to** either abandon the task, switch to competitors, or spend disproportionate effort finding what they came for, **resulting in** declining satisfaction and session quality for YouTube's most valuable user segments, directly contradicting the platform's own 2026 goal of "entertainment across ALL formats."
 
-**Job 2 — The Subscriber**:
-*When* I have 15 minutes to catch up on my favorite creators, *I want to* see their latest uploads front and center, *so I can* stay connected without the algorithm deciding what I watch.
-**Broken because**: Subscription uploads are buried under algorithmic Shorts recommendations.
-
-**Job 3 — The Researcher**:
-*When* I search for a specific topic (e.g., "best laptop 2026 review"), *I want to* filter results by format, quality, and recency, *so I can* find trustworthy content without sifting through AI slop and Shorts.
-**Broken because**: YouTube removed "Rating" and "Last Hour" filters. No "Long-form only" toggle exists.
-
-> *Rationale: See *[*Supporting Document — Section 2*](#)* for JTBD development and why these 3 jobs were selected.*
+> *Rationale: See Supporting Document — Section 2 for JTBD development, 3 underlying jobs, and why these user segments were selected.*
 
 ---
 

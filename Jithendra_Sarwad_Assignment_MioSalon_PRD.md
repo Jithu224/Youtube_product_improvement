@@ -5,8 +5,9 @@
 
 ### 1. Overview
 
+
 | Field | Detail |
-|-------|--------|
+| --- | --- |
 | **Product** | YouTube Mobile & Desktop App |
 | **Features** | F1: Intent-Based Feed Modes, F4: Enhanced Search Format Filters |
 | **Author** | Jithendra Sarwad |
@@ -22,7 +23,7 @@ YouTube's home feed has become Shorts-dominated (80% of slots), alienating users
 ### 3. Goals & Success Metrics
 
 | Goal | Metric | Target |
-|------|--------|--------|
+| --- | --- | --- |
 | Increase long-form engagement | Avg. session duration for non-Shorts content | +15% in 90 days |
 | Reduce feed fatigue | Scroll depth before exit (home feed) | +40% more scroll depth |
 | Improve search satisfaction | Search-to-watch conversion rate | +10% |
@@ -32,7 +33,7 @@ YouTube's home feed has become Shorts-dominated (80% of slots), alienating users
 ### 4. User Personas
 
 | Persona | Description | Current Pain | Desired Outcome |
-|---------|-------------|-------------|-----------------|
+| --- | --- | --- | --- |
 | **The Learner** | Uses YouTube to learn skills (coding, cooking, music). 25-35 age. | Drowns in Shorts when searching for tutorials. Feed doesn't match intent. | Dedicated learning feed with long-form educational content. |
 | **The Subscriber** | Follows 50+ channels, wants to stay updated. | Subscribed creators buried under algorithmic Shorts recommendations. | Chronological feed of unwatched subscription uploads. |
 | **The Explorer** | Casual browser, open to new content. | Feed is repetitive — same type of Shorts, no variety. | Discover new creators and formats outside their bubble. |
@@ -54,7 +55,7 @@ Replace the current generic topic chips (Gaming, Music, News, etc.) at the top o
 ##### 5.1.2 Feed Modes
 
 | Mode | Icon | Algorithm Behavior | Content Mix |
-|------|------|--------------------|-------------|
+| --- | --- | --- | --- |
 | **All** | `🏠` | Current default behavior (status quo) | 80% Shorts, 20% long-form (unchanged) |
 | **Learn** | `📚` | Weight toward educational, tutorial, how-to content | 90% long-form (10+ min), 10% short explainers |
 | **Catch up** | `🔔` | Chronological subscription uploads only | 100% subscriptions, no algo ranking |
@@ -117,7 +118,7 @@ Restore removed search filters and add new format/quality controls to give users
 
 **Format Filters** (horizontal chips, single-select):
 | Filter | Behavior |
-|--------|----------|
+| --- | --- |
 | `All` | Default — shows everything |
 | `Long-form` | Videos > 4 minutes only. No Shorts. |
 | `Shorts` | Shorts only (already exists) |
@@ -126,7 +127,7 @@ Restore removed search filters and add new format/quality controls to give users
 
 **Duration Presets** (horizontal chips, single-select, visible when Long-form selected):
 | Filter | Range |
-|--------|-------|
+| --- | --- |
 | `< 5 min` | 0-5 minutes |
 | `5-20 min` | 5-20 minutes |
 | `20-60 min` | 20-60 minutes |
@@ -134,7 +135,7 @@ Restore removed search filters and add new format/quality controls to give users
 
 **Sort Options** (dropdown):
 | Option | Status |
-|--------|--------|
+| --- | --- |
 | Relevance | Existing |
 | Upload date | Existing |
 | View count | Existing (renamed from "Popularity") |
@@ -142,7 +143,7 @@ Restore removed search filters and add new format/quality controls to give users
 
 **Upload Date Sub-filters** (dropdown):
 | Option | Status |
-|--------|--------|
+| --- | --- |
 | **Last hour** | **RESTORED** (removed Jan 2026) |
 | Today | Existing |
 | This week | Existing |
@@ -151,7 +152,7 @@ Restore removed search filters and add new format/quality controls to give users
 
 **Quality Signals** (visible on each result card):
 | Signal | Display |
-|--------|---------|
+| --- | --- |
 | Verified creator | ✅ checkmark next to channel name |
 | Like ratio | "94% liked" badge |
 | AI-generated label | "🤖 AI-generated" tag (if applicable) |
@@ -183,7 +184,7 @@ Restore removed search filters and add new format/quality controls to give users
 ### 6. Technical Considerations
 
 | Area | Details |
-|------|---------|
+| --- | --- |
 | **Feed Modes (F1)** | Requires algorithm-side changes to support intent-weighted content ranking. Can leverage existing topic classification ML models. "Catch up" mode is simplest — just chronological subscription query. |
 | **Search Filters (F4)** | Mostly frontend + API parameter changes. Filter infrastructure already exists. "Rating" sort was previously available — backend support likely still present. |
 | **Performance** | Mode switching should feel instant (<500ms). Pre-fetch top 5 results for adjacent modes. |
@@ -192,7 +193,7 @@ Restore removed search filters and add new format/quality controls to give users
 ### 7. Rollout Plan
 
 | Phase | Timeline | Scope |
-|-------|----------|-------|
+| --- | --- | --- |
 | **Phase 1** | Week 1-2 | F4 (Search Filters) — frontend changes only, restore removed filters |
 | **Phase 2** | Week 3-4 | F1 "Catch up" mode only — simplest (chronological subs, no ML) |
 | **Phase 3** | Week 5-8 | F1 "Learn" and "Deep dive" modes — requires content classification |

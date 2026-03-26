@@ -33,30 +33,17 @@ YouTube **says** "all formats" but **acts** "Shorts first":
 
 **This gap between stated goal and actual product behavior is the core opportunity we're addressing.**
 
-### Problem Statement (JTBD Framework)
+### Problem Statement (JTBD)
 
-YouTube is failing 3 core user jobs:
+> **When** intent-driven YouTube users — learners, subscribers, and researchers — open the app to accomplish a specific goal (learn a skill, catch up on creators, or find a trusted answer), **they struggle to** get the job done because the home feed is 80% Shorts regardless of their intent, and search has lost critical filters (Rating, Last Hour) while being flooded with AI slop — **which forces them to** either abandon the task, switch to competitors, or spend disproportionate effort finding what they came for, **resulting in** declining satisfaction and session quality for YouTube's most valuable user segments, directly contradicting the platform's own 2026 goal of "entertainment across ALL formats."
 
-**Job 1 — The Learner**:
-> *When* I open YouTube to learn a new skill, *I want to* find quality long-form tutorials quickly, *so I can* build real knowledge without wading through Shorts and clickbait.
+**3 underlying jobs driving this statement**:
 
-**Broken because**: Home feed serves 80% Shorts. Educational long-form is buried. No way to signal "I'm here to learn."
-
-**Job 2 — The Subscriber**:
-> *When* I have 15 minutes to catch up on my favorite creators, *I want to* see their latest uploads front and center, *so I can* stay connected without the algorithm deciding what I watch.
-
-**Broken because**: Subscription uploads are buried under algorithmic Shorts recommendations. The Subscriptions tab exists but is deprioritized in navigation.
-
-**Job 3 — The Researcher**:
-> *When* I search for a specific topic (e.g., "best laptop 2026 review"), *I want to* filter results by format, quality, and recency, *so I can* find trustworthy content without sifting through AI slop and Shorts.
-
-**Broken because**: YouTube removed "Rating" and "Last Hour" filters in Jan 2026. No "Long-form only" toggle exists. Shorts and AI-generated content pollute search results.
-
-| Job | Unmet Need | Feature Solution |
-| --- | --- | --- |
-| The Learner | Intent-aware feed that prioritizes educational content | F1: Learn mode |
-| The Subscriber | Chronological, algo-free subscription feed | F1: Catch up mode |
-| The Researcher | Format filters + quality signals in search | F4: Enhanced Search Filters |
+| Job | When... | I want to... | So I can... | Broken because... | Feature |
+|-----|---------|-------------|-------------|-------------------|---------|
+| **The Learner** | I open YouTube to learn a skill | find quality long-form tutorials quickly | build real knowledge | Feed is 80% Shorts. Educational content buried. | F1: Learn mode |
+| **The Subscriber** | I have 15 min to catch up on creators | see latest uploads front and center | stay connected | Uploads buried under algorithmic Shorts recs. | F1: Catch up mode |
+| **The Researcher** | I search a specific topic | filter by format, quality, recency | find trustworthy content | "Rating"/"Last Hour" removed. AI slop pollutes results. | F4: Search filters |
 
 Sources:
 - [Neal Mohan's 2026 Letter](https://blog.youtube/inside-youtube/the-future-of-youtube-2026/)

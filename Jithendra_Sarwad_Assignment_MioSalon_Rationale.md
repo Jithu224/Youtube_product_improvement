@@ -26,23 +26,25 @@
 
 ---
 
-## Section 2: Problem Statement (JTBD Framework)
+## Section 2: Problem Statement (JTBD)
 
-**Decision**: Frame the problem using Jobs To Be Done — 3 core jobs that YouTube is failing at.
+**The combined statement**:
 
-**Why JTBD**:
-- JTBD focuses on what the user is TRYING TO ACCOMPLISH, not what they're complaining about
-- "Too many Shorts" is a symptom. "I can't find a tutorial" is the unmet job
-- Each job maps directly to a feature solution → clean traceability from problem to solution
-- JTBD is a recognized PM framework — shows methodology, not just opinion
+> **When** intent-driven YouTube users — learners, subscribers, and researchers — open the app to accomplish a specific goal (learn a skill, catch up on creators, or find a trusted answer), **they struggle to** get the job done because the home feed is 80% Shorts regardless of their intent, and search has lost critical filters (Rating, Last Hour) while being flooded with AI slop — **which forces them to** either abandon the task, switch to competitors, or spend disproportionate effort finding what they came for, **resulting in** declining satisfaction and session quality for YouTube's most valuable user segments, directly contradicting the platform's own 2026 goal of "entertainment across ALL formats."
 
-**The 3 Jobs and why they're broken**:
+**Why JTBD framework**:
+- Focuses on what users are TRYING TO ACCOMPLISH, not what they're complaining about
+- "Too many Shorts" is a symptom. "I can't get my job done" is the real problem
+- Maps directly to feature solutions → clean traceability from problem to solution
+- Recognized PM framework — shows methodology, not just opinion
 
-| Job | JTBD Statement | Why It's Broken | Maps to |
-|-----|---------------|-----------------|---------|
-| **The Learner** | When I open YouTube to learn a skill, I want to find quality long-form tutorials quickly, so I can build real knowledge | Home feed is 80% Shorts. Educational long-form buried. | F1: Learn mode |
-| **The Subscriber** | When I have 15 min to catch up on creators, I want to see their latest uploads front and center, so I can stay connected | Subscription uploads buried under algorithmic Shorts recs. | F1: Catch up mode |
-| **The Researcher** | When I search a specific topic, I want to filter by format/quality/recency, so I can find trustworthy content | "Rating" and "Last Hour" filters removed. No "Long-form only" toggle. AI slop pollutes results. | F4: Search filters |
+**3 underlying jobs that feed the combined statement**:
+
+| Job | When... | I want to... | So I can... | Broken because... | Feature |
+|-----|---------|-------------|-------------|-------------------|---------|
+| **The Learner** | I open YouTube to learn a skill | find quality long-form tutorials quickly | build real knowledge | Feed is 80% Shorts. Educational content buried. | F1: Learn mode |
+| **The Subscriber** | I have 15 min to catch up on creators | see latest uploads front and center | stay connected | Uploads buried under algorithmic Shorts recs. | F1: Catch up mode |
+| **The Researcher** | I search a specific topic | filter by format, quality, recency | find trustworthy content | "Rating"/"Last Hour" removed. AI slop pollutes results. | F4: Search filters |
 
 **Why these 3 jobs, not others**:
 - They represent YouTube's most valuable user segments (highest session duration, highest ad revenue)
