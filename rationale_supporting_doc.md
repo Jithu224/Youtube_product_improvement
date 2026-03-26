@@ -26,14 +26,29 @@
 
 ---
 
-## Section 2: Problem Statement
+## Section 2: Problem Statement (JTBD Framework)
 
-**Decision**: Frame the problem as a gap between YouTube's stated goal and actual product behavior.
+**Decision**: Frame the problem using Jobs To Be Done — 3 core jobs that YouTube is failing at.
 
-**Why this framing**:
-- Saying "YouTube has too many Shorts" is a user complaint. Saying "YouTube's product contradicts its own CEO's stated goal" is a PM insight
-- This framing makes our features strategic recommendations, not wishlists
-- It's defensible — we're using YouTube's own words against their own product decisions
+**Why JTBD**:
+- JTBD focuses on what the user is TRYING TO ACCOMPLISH, not what they're complaining about
+- "Too many Shorts" is a symptom. "I can't find a tutorial" is the unmet job
+- Each job maps directly to a feature solution → clean traceability from problem to solution
+- JTBD is a recognized PM framework — shows methodology, not just opinion
+
+**The 3 Jobs and why they're broken**:
+
+| Job | JTBD Statement | Why It's Broken | Maps to |
+|-----|---------------|-----------------|---------|
+| **The Learner** | When I open YouTube to learn a skill, I want to find quality long-form tutorials quickly, so I can build real knowledge | Home feed is 80% Shorts. Educational long-form buried. | F1: Learn mode |
+| **The Subscriber** | When I have 15 min to catch up on creators, I want to see their latest uploads front and center, so I can stay connected | Subscription uploads buried under algorithmic Shorts recs. | F1: Catch up mode |
+| **The Researcher** | When I search a specific topic, I want to filter by format/quality/recency, so I can find trustworthy content | "Rating" and "Last Hour" filters removed. No "Long-form only" toggle. AI slop pollutes results. | F4: Search filters |
+
+**Why these 3 jobs, not others**:
+- They represent YouTube's most valuable user segments (highest session duration, highest ad revenue)
+- They are intent-driven — these users come to YouTube with a PURPOSE, not to casually scroll
+- Each job has a direct, measurable failure point (80% Shorts in feed, filters removed)
+- A 4th job ("The Casual Scroller") was excluded — it's already well-served by the current Shorts-heavy feed
 
 **Evidence backing the gap**:
 - Long-form recs: 6/row → 2/row (80% reduction) — [PPC Land](https://ppc.land/youtubes-home-feed-quietly-kills-long-form-video-discovery/)

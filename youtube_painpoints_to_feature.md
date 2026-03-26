@@ -33,6 +33,31 @@ YouTube **says** "all formats" but **acts** "Shorts first":
 
 **This gap between stated goal and actual product behavior is the core opportunity we're addressing.**
 
+### Problem Statement (JTBD Framework)
+
+YouTube is failing 3 core user jobs:
+
+**Job 1 — The Learner**:
+> *When* I open YouTube to learn a new skill, *I want to* find quality long-form tutorials quickly, *so I can* build real knowledge without wading through Shorts and clickbait.
+
+**Broken because**: Home feed serves 80% Shorts. Educational long-form is buried. No way to signal "I'm here to learn."
+
+**Job 2 — The Subscriber**:
+> *When* I have 15 minutes to catch up on my favorite creators, *I want to* see their latest uploads front and center, *so I can* stay connected without the algorithm deciding what I watch.
+
+**Broken because**: Subscription uploads are buried under algorithmic Shorts recommendations. The Subscriptions tab exists but is deprioritized in navigation.
+
+**Job 3 — The Researcher**:
+> *When* I search for a specific topic (e.g., "best laptop 2026 review"), *I want to* filter results by format, quality, and recency, *so I can* find trustworthy content without sifting through AI slop and Shorts.
+
+**Broken because**: YouTube removed "Rating" and "Last Hour" filters in Jan 2026. No "Long-form only" toggle exists. Shorts and AI-generated content pollute search results.
+
+| Job | Unmet Need | Feature Solution |
+| --- | --- | --- |
+| The Learner | Intent-aware feed that prioritizes educational content | F1: Learn mode |
+| The Subscriber | Chronological, algo-free subscription feed | F1: Catch up mode |
+| The Researcher | Format filters + quality signals in search | F4: Enhanced Search Filters |
+
 Sources:
 - [Neal Mohan's 2026 Letter](https://blog.youtube/inside-youtube/the-future-of-youtube-2026/)
 - [YouTube Home Feed Kills Long-Form Discovery — PPC Land](https://ppc.land/youtubes-home-feed-quietly-kills-long-form-video-discovery/)
