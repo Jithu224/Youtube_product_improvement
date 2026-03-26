@@ -396,6 +396,96 @@ Users jump directly to their intent category instead of scrolling through mixed,
 
 ---
 
+## 7. Trade-offs We Made (and Why)
+
+### Trade-off 1: Replacing Topic Chips vs Adding a Second Row
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| **A: Replace topic chips with intent chips (chosen)** | Clean UI, no added clutter, forces a clear mental model shift | Loses quick access to topic filters (Gaming, Music, News) |
+| B: Add intent chips as a second row above topic chips | Preserves existing behavior | Adds vertical space, cognitive overload, users may ignore second row |
+
+**Why we chose A**: YouTube's current topic chips are low-signal — they filter by content category but don't change the algorithm's behavior. Users still get Shorts-heavy feeds even when selecting "Gaming." Intent chips fundamentally change WHAT the algorithm serves, making topic chips redundant within each mode.
+
+**Risk mitigation**: The "All" mode preserves the exact current experience including topic chips as a fallback during A/B testing.
+
+### Trade-off 2: Session-Persistent Modes vs Permanent User Preference
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| **A: Mode resets to "All" on app restart (chosen)** | Low commitment, encourages exploration, preserves YouTube's default behavior for most sessions | Power users must re-select their preferred mode each time |
+| B: Mode persists permanently until changed | Reduces friction for repeat users | Users may forget they're in a mode, reducing content diversity. YouTube loses Shorts impressions permanently for users who set "Learn" once. |
+
+**Why we chose A**: YouTube's ad revenue depends on Shorts impressions. Making "Learn" mode permanent would permanently reduce Shorts exposure for that user. Session-reset is a compromise — users get control per session without permanently opting out of YouTube's revenue model. This makes the feature more likely to be approved internally.
+
+**Future iteration**: If data shows >60% of users re-select the same mode daily, introduce "Default mode" in Settings as a v2 feature.
+
+### Trade-off 3: Restoring Removed Filters vs Building New Ones Only
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| **A: Restore "Rating" and "Last Hour" + add new filters (chosen)** | Addresses the loudest user complaint directly, quick win, signals YouTube is listening | YouTube removed these for a reason ("not working as expected") — may resurface old bugs |
+| B: Only add new filters (Long-form, Duration presets) | Avoids old bugs, forward-looking | Ignores the specific user pain point — feels tone-deaf |
+
+**Why we chose A**: YouTube's stated reason for removal ("not working as expected") is vague and widely seen as dismissive. Restoring these filters — even in improved form — signals responsiveness to users. The "Rating" sort can be improved by using like-ratio instead of the old like/dislike system.
+
+### Trade-off 4: Quality Signals on Search Results vs Clean Minimal UI
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| **A: Show quality signals (% liked, verified, AI label) on results (chosen)** | Helps users make faster, better decisions. Fights AI slop passively. | Adds visual noise. YouTube may resist surfacing "AI-generated" label (discourages AI tool adoption). |
+| B: Keep search results clean, let algorithm rank quality higher | Cleaner UI, less cognitive load | Users can't distinguish quality themselves — algorithm opacity continues |
+
+**Why we chose A**: YouTube's own 2026 Priority #4 is "Supercharging and Safeguarding Creativity" — which explicitly includes labeling AI-generated content. Our quality signals ALIGN with YouTube's stated direction. The "% liked" metric is already available (like count is public) — we're just surfacing existing data.
+
+### Trade-off 5: Picking P1 + P4 over P2 (Ads)
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| **A: P1 (Shorts takeover) + P4 (Search degradation) — chosen** | Shows PM judgment, addresses structural product issues, specific and fixable | Ignores the #1 user complaint (ads) |
+| B: P2 (Ads) + P1 (Shorts takeover) | Addresses the most complained-about issue | "Reduce ads" = telling YouTube to cut $40B revenue. Shows no PM sophistication. |
+
+**Why we chose A**: The assignment is for a PM internship — we're being evaluated on product thinking, not user advocacy. Any user can say "too many ads." A PM identifies which user complaints represent **actual product opportunities** vs **intentional business decisions**. Ads are the latter.
+
+---
+
+## 8. Edge Cases & Risks
+
+### Edge Cases for F1 (Intent-Based Feed Modes)
+
+| # | Edge Case | Impact | Mitigation |
+| --- | --- | --- | --- |
+| 1 | **User selects "Learn" but has no educational watch history** | Algorithm has no signal to personalize — cold start problem | Serve curated "most popular educational" content by category (coding, cooking, finance). Show an onboarding prompt: "What do you want to learn?" |
+| 2 | **Creator uploads content that spans multiple intents** (e.g., an entertaining tutorial) | Content may not appear in the mode the user expects | Allow content to appear in multiple modes with different ranking weights. A fun coding tutorial ranks in both "Learn" and "All." |
+| 3 | **"Catch up" mode for users subscribed to 500+ channels** | Feed becomes overwhelming — hundreds of unwatched videos | Default to "Today" filter. Show channel group folders. Add "Priority channels" (user marks top 10-20 channels as priority). |
+| 4 | **"Quick watch" mode cannibalizes Shorts tab** | Two entry points for Shorts creates redundancy | "Quick watch" differentiates by mixing trending Shorts + clips from long-form. Shorts tab remains pure Shorts. |
+| 5 | **Metric gaming: creators tag content as "educational" to appear in Learn mode** | Low-quality content floods Learn mode | Use engagement signals (watch-through rate, satisfaction surveys) not just tags. YouTube already has content classification ML — leverage it. |
+| 6 | **Mode switching on slow network** | Feed refresh feels broken — blank screen | Show skeleton loaders immediately. Pre-cache the first 3 videos for adjacent modes in the background. |
+| 7 | **Accessibility: screen reader users navigating chips** | Horizontal chip scroll may not announce mode changes properly | Use proper ARIA roles: `role="tablist"` for chips, `role="tab"` for each chip, `aria-selected` for active state. Announce mode change: "Switched to Learn mode." |
+
+### Edge Cases for F4 (Enhanced Search Filters)
+
+| # | Edge Case | Impact | Mitigation |
+| --- | --- | --- | --- |
+| 1 | **"Long-form only" + "Last hour" returns 0 results for niche queries** | Empty state frustrates users | Show: "No long-form results in the last hour. Try 'Today' or 'All formats'?" with one-tap filter adjustment. |
+| 2 | **"Sort by Rating" abused by creators using engagement bait** (e.g., "like this video if you breathe") | Artificially inflated ratings skew sort | Use weighted rating: factor in like ratio, watch-through rate, AND comment sentiment — not just raw like count. |
+| 3 | **AI-generated label on results — false positives** | Legitimate creators flagged as AI → reputation damage | Use "Suspected AI-generated" with soft confidence signal. Allow creators to appeal via YouTube Studio. Only show hard "AI-generated" label for content created with YouTube's own AI tools (where labeling is automatic). |
+| 4 | **Multiple filters combined produce contradictory results** (e.g., "Shorts" + "> 1 hour") | Impossible filter combination | Disable contradictory filters automatically. When "Shorts" is selected, hide duration presets. |
+| 5 | **Verified creator badge creates a two-tier system** | Small creators feel penalized — verified gets more clicks | Badge indicates "original creator" not "quality." Show verification criteria transparently. Don't use verification in ranking — only as a visual signal. |
+| 6 | **Filter state in URL shared to someone who expects default YouTube** | Shared URL opens with unexpected filters active | Show a subtle banner: "Viewing with filters: Long-form, 5-20min, Rating sort. [Clear all]" |
+
+### Broader Risks
+
+| Risk | Likelihood | Impact | Mitigation |
+| --- | --- | --- | --- |
+| **YouTube refuses to reduce Shorts visibility (internal politics)** | High | High | "All" mode = current behavior. We're not REMOVING Shorts — we're adding choice. Shorts revenue is protected via "Quick watch" mode. |
+| **Feature adoption is low (<5%)** | Medium | Medium | Onboarding tooltip, A/B test placement, track intent chip engagement. If low, iterate on chip labels and positioning. |
+| **Mode fragmentation reduces recommendation quality** | Medium | Medium | Each mode still uses collaborative filtering within its content pool. "Learn" mode has 2B+ educational videos — plenty of signal. |
+| **Restored filters reintroduce old bugs YouTube removed them for** | Low | Medium | Rebuild "Rating" sort using like-ratio (not the old like/dislike system that was deprecated). Test "Last Hour" filter with proper time-zone handling. |
+| **Cannibalization: users in "Learn" mode stop watching Shorts entirely** | Medium | High (revenue) | Monitor per-user Shorts watch time before/after. If significant decline, show a "Quick break?" Shorts card after 30 min in Learn mode. |
+
+---
+
 ## Summary
 
 | Step | Output |
@@ -406,5 +496,39 @@ Users jump directly to their intent category instead of scrolling through mixed,
 | **Thesis** | YouTube's goal says "all formats" but the product says "Shorts first." Our features close this gap by giving users control over their content intent. |
 
 ---
+
+---
+
+## 10. Portfolio
+
+### Project Links
+
+| Asset | Link | Description |
+| --- | --- | --- |
+| **Live Prototype** | [jithu224.github.io/Youtube_product_improvement](https://jithu224.github.io/Youtube_product_improvement/) | Interactive before/after prototype with intent feed modes and enhanced search filters. Mobile + desktop responsive. |
+| **GitHub Repository** | [github.com/Jithu224/Youtube_product_improvement](https://github.com/Jithu224/Youtube_product_improvement) | Full source code, analysis, and PRD |
+| **This Analysis** | `youtube_painpoints_to_feature.md` | Pain points, prioritization, RICE scoring, trade-offs, edge cases |
+| **PRD** | `PRD_intent_feed_modes.md` | Product Requirements Document with specs, personas, rollout plan |
+
+### What This Project Demonstrates
+
+| PM Skill | How It's Demonstrated |
+| --- | --- |
+| **Strategic Thinking** | Identified gap between YouTube's stated 2026 goal ("all formats") and actual product behavior (Shorts-first). Framed features as closing this gap. |
+| **User Research** | Analyzed Play Store reviews, Trustpilot, Reddit, and tech press to source 5 pain points with quantified evidence. |
+| **Prioritization** | Used a scoring matrix (Impact, Reach, Frequency, Severity) to select top 2 pain points. Deliberately excluded the #1 user complaint (ads) — demonstrating business judgment. |
+| **Feature Design** | Proposed 6 features, RICE-scored them, selected 3 winners with clear rationale. |
+| **Trade-off Analysis** | Documented 5 explicit trade-offs with options considered, decision made, and reasoning. |
+| **Edge Case Thinking** | Identified 13 edge cases across both features with specific mitigations. |
+| **Risk Assessment** | Mapped 5 broader risks with likelihood, impact, and mitigation strategies. |
+| **Prototyping** | Built a working interactive prototype (HTML/CSS/JS) with before/after comparison, responsive design, and mode switching. |
+| **Communication** | Structured the entire analysis as a clear narrative: Goal → Pain Points → Prioritization → Features → Scoring → Trade-offs → Edge Cases → Prototype. |
+
+### About
+
+**Jithendra Sarwad**
+- PM Internship Assignment for MioSalon (via Airtribe)
+- Product analyzed: YouTube Mobile App
+- Date: March 25, 2026
 
 *Next step: Condense this into a 1-page Google Doc submission for MioSalon via Airtribe.*
